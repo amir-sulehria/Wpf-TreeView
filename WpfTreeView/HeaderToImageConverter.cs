@@ -7,28 +7,26 @@ using System.Windows.Media.Imaging;
 namespace WpfTreeView
 {
     //converts a full path  to specific image type of a drive, folder or file
-    [ValueConversion(typeof(string), typeof(BitmapImage))]
+    [ValueConversion(typeof(DirectoryItemType), typeof(BitmapImage))]
     public class HeaderToImageConverter : IValueConverter
     {
         public static HeaderToImageConverter Instance = new HeaderToImageConverter();
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var path = (string)value;
-            if (path == null)
-                return null;
-
             //by default
             var image = "Images/file.png";
-            var name = MainWindow.GetFileFolderName(path);
 
-            if (string.IsNullOrEmpty(name))
-                image = "Images/drive.png";
-            //check if file or folder
-            else if(new FileInfo(path).Attributes.HasFlag(FileAttributes.Directory))
+            switch ((DirectoryItemType)value)
             {
-                image = "Images/folder-closed.png";
+                case DirectoryItemType.Drive:
+                    image = "Images/drive.png";
+                    break;
+                case DirectoryItemType.Folder:
+                    image = "Images/folder-closed.png";
+                    break;
 
             }
+
             return new BitmapImage(new Uri($"pack://application:,,,/{image}"));
         }
 
